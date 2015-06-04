@@ -2,7 +2,9 @@ navigator.getUserMedia = navigator.getUserMedia
   || navigator.webkitGetUserMedia
   || navigator.mozGetUserMedia
   || navigator.msGetUserMedia
-  || function () { alert('Your browser is too old :(') }
+  || function (a, b, fail) {
+      return fail && fail(new Error('Your browser is too old :('))
+    }
 window.URL = window.URL
   || window.webkitURL
   || window.mozURL
@@ -11,9 +13,9 @@ window.performance = window.performance
   || { now: function () { return Date.now() } }
 
 window.SHOW_FPS = false
-window.COLOR_DURATION = 500
+window.COLOR_DURATION = 2000
 window.NUM_COLORS = 6
-window.FADE = 1.05
+window.FADE = 1.075
 window.onload = init
 
 function createVideo() {
