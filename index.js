@@ -32,7 +32,7 @@ function createVideo() {
     if (err.code === 1) {
       console.log('User declined permissions.')
     }
-    alert('It isn\'t cool without video input :(')
+    alert('bruh, you gotta let me use your video for this to work...')
   }
   navigator.getUserMedia({ video: true }, success, fail)
 
@@ -49,7 +49,13 @@ function clear(ctx, x, y, w, h) {
 }
 
 function drawVideo(ctx, src) {
-  ctx.drawImage(src, 0, 0, src.videoWidth, src.videoHeight, 0, 0, ctx.canvas.width, ctx.canvas.height)
+  var sx = 0, sy = 0,
+    sw = src.videoWidth,
+    sh = src.videoHeight,
+    dx = 0, dy = 0,
+    dw = ctx.canvas.width,
+    dh = ctx.canvas.height;
+  ctx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh)
 }
 
 function drawCanvas(ctx1, ctx2) {
@@ -210,13 +216,49 @@ function init() {
     }
   }
 
+  var currentFID
   function loop() {
     var time = window.performance.now()
     update(time - last)
     render(time - last)
     last = time
-    requestAnimationFrame(loop)
+    currentFID = requestAnimationFrame(loop)
   }
 
+  // preserve aspect ratio with no black space (fill screen)
+  function resize() {
+    var sw = window.innerWidth,
+      sh = window.innerHeight,
+      cw = ctx.canvas.width,
+      ch = ctx.canvas.height,
+      sr = sw / sh,
+      cr = cw / ch,
+      w, h, x, y
+
+    if (sr > cr) {
+      w = sw
+      h = w / cr
+    } else {
+      h = sh
+      w = h * cr
+    }
+
+    x = (sw - w) / 2
+    y = (sh - h) / 2
+
+    ctx.canvas.style.width = w + 'px';
+    ctx.canvas.style.height = h + 'px';
+    ctx.canvas.style.left = x + 'px';
+    ctx.canvas.style.top = y + 'px';
+  }
+
+  window.onresize = resize
+  window.start = loop
+  window.stop = function () {
+    cancelAnimationFrame(currentFID)
+  }
+
+  // start!
   loop()
+  resize()
 }
