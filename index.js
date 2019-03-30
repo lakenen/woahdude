@@ -25,7 +25,12 @@ function createVideo() {
   video.autoplay = true
 
   var success = function(localMediaStream) {
-    video.src = window.URL.createObjectURL(localMediaStream)
+    // video.src = window.URL.createObjectURL(localMediaStream)
+    try {
+      video.srcObject = localMediaStream;
+    } catch (error) {
+      video.src = window.URL.createObjectURL(localMediaStream);
+    }
   }
   var fail = function(err) {
     console.log(err)
